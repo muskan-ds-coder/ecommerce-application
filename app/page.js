@@ -5,6 +5,20 @@ export default function Home() {
 
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
+  const [query, setQuery] = useState("");
+
+  const handleSearch = (event) => {
+    event.preventDefault();
+  };
+
+  const filteredProducts = products.filter((product) => {
+    const search = query.toLowerCase();
+    return (
+      product.title?.toLowerCase().includes(search) ||
+      product.description?.toLowerCase().includes(search) ||
+      product.category?.toLowerCase().includes(search)
+    );
+  });
 
   useEffect(() => {
     fetch("/api/products")
@@ -26,10 +40,16 @@ export default function Home() {
     <main className="min-h-screen bg-slate-50 px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <header className="mb-8 text-center">
-          <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Shop</p>
-          <h1 className="mt-2 text-4xl font-semibold text-slate-900 sm:text-5xl">
-            All Products
+          <h1 className="text-lg uppercase tracking-[0.3em] font-semibold text-slate-800 sm:text-3xl">
+            Shop
           </h1>
+          <h3 className="mt-2 text-left text-4xl text-slate-900 sm:text-4xl">
+            All Products
+          </h3>
+          <div className="mb-3 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
+            <input value={query} onChange={(e) => setQuery(e.target.value)} type="text" placeholder="Search products..." className="w-full max-w-5xl flex-1 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm text-slate-900 shadow-sm focus:border-slate-500 focus:ring-1 focus:ring-slate-500" />
+            <button className="rounded-lg bg-blue-500 px-4 py-2 text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500" onClick={handleSearch}>Search</button>
+          </div>
           <p className="mx-auto mt-3 max-w-2xl text-base text-slate-600 sm:text-lg">
             Browse every product in the store.
           </p>
@@ -48,7 +68,7 @@ export default function Home() {
           </div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               <article
                 key={product._id}
                 className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
@@ -72,7 +92,7 @@ export default function Home() {
                   </p>
                   <div className="mt-5 flex items-center justify-between gap-4">
                     <span className="text-lg font-semibold text-slate-900">
-                      ${product.price?.toFixed(2)}
+                      ₹{product.price?.toFixed(0)}
                     </span>
                     <button
                       type="button"

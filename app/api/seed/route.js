@@ -12,14 +12,14 @@ export async function GET() {
     description: "Comfortable blue sneakers for everyday wear",
     price: 59.99,
     category: "Footwear",
-    image: "https://picsum.photos/seed/picsum/500/300"
+    image: "https://media.istockphoto.com/id/1249496770/photo/running-shoes.jpg?s=612x612&w=0&k=20&c=b4MahNlk4LH6H1ksJApfnlQ5ZPM3KGhI5i_yqhGD9c4="
   },
   {
     title: "Red T-Shirt",
     description: "Soft and stylish red t-shirt made from organic cotton",
     price: 29.99,
     category: "Apparel",
-    image: "https://picsum.photos/seed/picsum/500/300"
+    image: "https://media.istockphoto.com/id/178527852/photo/plain-red-t-shirt-on-a-white-background.jpg?s=612x612&w=0&k=20&c=W05Lg-8LZ17ia4v0hLyowEMWm1xsWPg_-pK-_oHz5wg="
   },
   {
     title: "Green Jacket",
