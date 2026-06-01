@@ -7,6 +7,12 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [query, setQuery] = useState("");
 
+  const randomizeUrl = (url) => {
+    if (!url) return url;
+    const separator = url.includes("?") ? "&" : "?";
+    return `${url}${separator}random=${Math.random().toString(36).slice(2)}`;
+  };
+
   const handleSearch = (event) => {
     event.preventDefault();
   };
@@ -75,7 +81,7 @@ export default function Home() {
               >
                 <div className="relative h-64 bg-slate-100">
                   <img
-                    src={product.image || "/placeholder.png"}
+                    src={randomizeUrl(product.image) || "/placeholder.png"}
                     alt={product.title}
                     className="h-full w-full object-cover"
                   />
