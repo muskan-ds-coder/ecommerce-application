@@ -1,7 +1,10 @@
 ﻿"use client"
+import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useCart } from "@/components/CartProvider";
 
 export default function Home() {
+  const { addItem } = useCart();
 
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
@@ -15,6 +18,10 @@ export default function Home() {
 
   const handleSearch = (event) => {
     event.preventDefault();
+  };
+
+  const handleAddToCart = (product) => {
+    addItem(product);
   };
 
   const filteredProducts = products.filter((product) => {
@@ -96,16 +103,25 @@ export default function Home() {
                   <p className="mt-3 text-sm leading-6 text-slate-600 line-clamp-3">
                     {product.description}
                   </p>
-                  <div className="mt-5 flex items-center justify-between gap-4">
+                  <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <span className="text-lg font-semibold text-slate-900">
                       ₹{product.price?.toFixed(0)}
                     </span>
-                    <button
-                      type="button"
-                      className="rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700"
-                    >
-                      View
-                    </button>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <Link
+                        href={`/products/${product._id}`}
+                        className="rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700"
+                      >
+                        View
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => handleAddToCart(product)}
+                        className="rounded-full bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
+                      >
+                        Add to cart
+                      </button>
+                    </div>
                   </div>
                 </div>
               </article>
