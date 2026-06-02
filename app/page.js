@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import { useCart } from "@/components/CartProvider";
 
 export default function Home() {
-  const { addItem } = useCart();
+  const { cart, addItem, updateQuantity } = useCart();
 
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
   const [query, setQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const randomizeUrl = (url) => {
     if (!url) return url;
@@ -16,8 +17,28 @@ export default function Home() {
     return `${url}${separator}random=${Math.random().toString(36).slice(2)}`;
   };
 
-  const handleSearch = (event) => {
+  const fetchProducts = async (search = "") => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/products${search ? `?query=${encodeURIComponent(search)}` : ""}`);
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+      const data = await response.json();
+      setProducts(Array.isArray(data) ? data : []);
+      setError(null);
+    } catch (err) {
+      console.error("Error fetching products:", err);
+      setError(err.message);
+      setProducts([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSearch = async (event) => {
     event.preventDefault();
+    await fetchProducts(query.trim());
   };
 
   const handleAddToCart = (product) => {
@@ -34,19 +55,7 @@ export default function Home() {
   });
 
   useEffect(() => {
-    fetch("/api/products")
-      .then((res) => {
-        if (!res.ok) throw new Error(`API error: ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
-        setProducts(Array.isArray(data) ? data : []);
-        setError(null);
-      })
-      .catch((err) => {
-        console.error("Error fetching products:", err);
-        setError(err.message);
-      });
+    fetchProducts();
   }, []);
 
   return (
@@ -81,51 +90,77 @@ export default function Home() {
           </div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filteredProducts.map((product) => (
-              <article
-                key={product._id}
-                className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
-              >
-                <div className="relative h-64 bg-slate-100">
-                  <img
-                    src={randomizeUrl(product.image) || "/placeholder.png"}
-                    alt={product.title}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div className="p-4 cursor-pointer">
-                  <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
-                    {product.category || "Uncategorized"}
-                  </p>
-                  <h2 className="mt-3 text-xl font-semibold text-slate-900">
-                    {product.title}
-                  </h2>
-                  <p className="mt-3 text-sm leading-6 text-slate-600 line-clamp-3">
-                    {product.description}
-                  </p>
-                  <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <span className="text-lg font-semibold text-slate-900">
-                      ₹{product.price?.toFixed(0)}
-                    </span>
-                    <div className="flex flex-wrap items-center gap-3">
-                      <Link
-                        href={`/products/${product._id}`}
-                        className="rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700"
-                      >
-                        View
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={() => handleAddToCart(product)}
-                        className="rounded-full bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
-                      >
-                        Add to cart
-                      </button>
+            {filteredProducts.map((product) => {
+              const cartItem = cart.find((item) => item._id === product._id);
+
+              return (
+                <article
+                  key={product._id}
+                  className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                >
+                  <div className="relative h-64 bg-slate-100">
+                    <img
+                      src={randomizeUrl(product.image) || "/placeholder.png"}
+                      alt={product.title}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  <div className="p-4 cursor-pointer">
+                    <p className="text-xs uppercase tracking-[0.25em] text-slate-500">
+                      {product.category || "Uncategorized"}
+                    </p>
+                    <h2 className="mt-3 text-xl font-semibold text-slate-900">
+                      {product.title}
+                    </h2>
+                    <p className="mt-3 text-sm leading-6 text-slate-600 line-clamp-3">
+                      {product.description}
+                    </p>
+                    <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <span className="text-lg font-semibold text-slate-900">
+                        ₹{product.price?.toFixed(0)}
+                      </span>
+                      <div className="flex flex-wrap items-center gap-3">
+                        <Link
+                          href="/cart"
+                          className="rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700"
+                        >
+                          View Cart
+                        </Link>
+                        {cartItem ? (
+                          <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-2 py-2">
+                            <button
+                              type="button"
+                              onClick={() => updateQuantity(product._id, cartItem.quantity - 1)}
+                              className="rounded-full border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+                            >
+                              -
+                            </button>
+                            <span className="min-w-8 text-center text-sm font-semibold text-slate-900">
+                              {cartItem.quantity}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleAddToCart(product)}
+                              className="rounded-full border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+                            >
+                              +
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => handleAddToCart(product)}
+                            className="rounded-full bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
+                          >
+                            Add to cart
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         )}
       </div>

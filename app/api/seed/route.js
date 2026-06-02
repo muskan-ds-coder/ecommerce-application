@@ -29,7 +29,7 @@ export async function GET() {
     description: "Comfortable blue sneakers for everyday wear",
     price: 59.99,
     category: "Footwear",
-    image: `https://picsum.photos/200/300?random=${Math.random()} `
+    image: "https://media.istockphoto.com/id/1350560575/photo/pair-of-blue-running-sneakers-on-white-background-isolated.jpg?s=2048x2048&w=is&k=20&c=q5PbZIu__xKIpwD9RiwCSn4ptSniWsD0GElqkCdsevM="
   },
   {
     title: "Red T-Shirt",
