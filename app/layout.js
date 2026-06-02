@@ -1,7 +1,8 @@
 import CartNav from "@/components/CartNav";
+import Navigation from "@/components/Navigation";
+import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
 import { CartProvider } from "@/components/CartProvider";
-import Link from "next/link";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -32,18 +33,7 @@ export default function RootLayout({ children }) {
               <Link href="/" className="text-lg font-semibold tracking-wide text-slate-900">
                 Bengaluru Society Market
               </Link>
-              <nav className="flex items-center gap-2 text-sm font-medium text-slate-700">
-                <Link href="/" className="rounded-full px-4 py-2 transition font-bold hover:bg-slate-100 hover:text-slate-900">
-                  Home
-                </Link>
-                <Link href="/about" className="rounded-full px-4 py-2 transition font-bold hover:bg-slate-100 hover:text-slate-900">
-                  About
-                </Link>
-                <Link href="/checkout" className="rounded-full px-4 py-2 transition font-bold hover:bg-slate-100 hover:text-slate-900">
-                  Checkout
-                </Link>
-                <CartNav />
-              </nav>
+              <Navigation />
             </div>
           </header>
           <main className="flex-1">{children}</main>

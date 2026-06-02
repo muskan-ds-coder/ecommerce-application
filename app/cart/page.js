@@ -86,13 +86,21 @@ export default function CartPage() {
                   <span>₹{(totalPrice + 20).toFixed(0)}</span>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={clearCart}
-                className="mt-8 w-full rounded-3xl bg-red-600 px-4 py-4 text-base font-semibold text-white transition hover:bg-red-700"
-              >
-                Clear cart
-              </button>
+              <div className="mt-8 space-y-3">
+                <button
+                  type="button"
+                  onClick={clearCart}
+                  className="w-full rounded-3xl bg-red-600 px-4 py-4 text-base font-semibold text-white transition hover:bg-red-700"
+                >
+                  Clear cart
+                </button>
+                <Link
+                  href="/checkout"
+                  className="inline-flex w-full items-center justify-center rounded-3xl bg-slate-900 px-4 py-4 text-base font-semibold text-white transition hover:bg-slate-800"
+                >
+                  Proceed to checkout
+                </Link>
+              </div>
             </aside>
           </div>
         )}
